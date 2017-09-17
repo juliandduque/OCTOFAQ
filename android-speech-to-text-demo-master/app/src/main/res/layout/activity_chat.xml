@@ -1,0 +1,84 @@
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:gravity="center"
+    android:orientation="vertical">
+
+    <TableLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TableLayout
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent">
+
+                <TableRow
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:windowSoftInputMode="stateVisible|adjustResize">
+
+                    <ImageButton
+                        android:id="@+id/btnSpeak"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="5dp"
+                        android:layout_marginTop="2dp"
+                        android:src="@android:drawable/ic_btn_speak_now" />
+
+                    <EditText
+                        android:id="@+id/txtText"
+                        android:layout_width="245dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="5dp"
+                        android:text=""
+                        android:textAppearance="?android:attr/textAppearanceMedium" />
+
+                    <Button
+                        android:id="@+id/SUBMITQUESTION"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="5dp"
+                        android:layout_marginRight="5dp"
+                        android:layout_marginTop="5dp"
+                        android:text="SUBMIT" />
+                </TableRow>
+
+            </TableLayout>
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="20dp" >
+
+            <TableLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content">
+
+                <TableRow
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <ListView
+
+                        android:id="@+id/FINDME"
+                        android:layout_width="wrap_content"
+                        android:layout_height="500dp"
+                        android:layout_marginTop="5dp">
+
+                    </ListView>
+                </TableRow>
+            </TableLayout>
+        </TableRow>
+
+    </TableLayout>
+
+
+</LinearLayout>
