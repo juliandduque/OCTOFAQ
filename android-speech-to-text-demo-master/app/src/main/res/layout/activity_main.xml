@@ -10,9 +10,9 @@
 
     <ImageView
         android:id="@+id/imageView"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app2:srcCompat="@drawable/lotuslogo" />
+        android:layout_width="154dp"
+        android:layout_height="240dp"
+        app2:srcCompat="@drawable/octo" />
 
     <TextView
         android:id="@+id/textView"
