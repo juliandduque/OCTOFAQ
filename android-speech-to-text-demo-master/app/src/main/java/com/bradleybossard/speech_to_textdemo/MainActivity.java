@@ -1,25 +1,15 @@
 package com.bradleybossard.speech_to_textdemo;
 
-import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.os.AsyncTask;
-import android.os.StrictMode;
-import android.speech.RecognizerIntent;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.TextView;
-import android.widget.Toast;
-
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.w3c.dom.Text;
-
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
@@ -28,9 +18,8 @@ import java.net.URL;
 import java.util.ArrayList;
 
 
-public class MainActivity extends ActionBarActivity {
-
-
+public class MainActivity extends ActionBarActivity
+{
     private EditText URLS;
     private Button submitURL;
     private TextView statusLabel;
@@ -143,6 +132,7 @@ public class MainActivity extends ActionBarActivity {
                 {
                     Intent intent = new Intent(MainActivity.this, Chat.class);
                     intent.putExtra("EXTRAMESSAGE", REQUESTURL);
+                    REQUESTURL = "https://westus.api.cognitive.microsoft.com/qnamaker/v2.0/knowledgebases/";
                     submitURL.setEnabled(true);
                     URLS.setEnabled(true);
                     startActivity(intent);

@@ -31,10 +31,10 @@ public class Chat extends ActionBarActivity {
     private EditText txtText;
     private ListView listView;
     private Button submitQuestion;
+    private MySimpleClass speaker;
 
     private ArrayAdapter<String> adapter;
     private ArrayList<String> arrayList;
-
 
     private String REQUESTURL = "https://westus.api.cognitive.microsoft.com/qnamaker/v2.0/knowledgebases/";
     private String SERVICEKEY = "354c22285b484aa3ac2e556a70b904b0";
@@ -71,6 +71,8 @@ public class Chat extends ActionBarActivity {
             @Override
             public void onClick(View v) {
 
+                speaker = new MySimpleClass(v.getContext());
+
                 Intent intent = new Intent(
                         RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
 
@@ -93,10 +95,10 @@ public class Chat extends ActionBarActivity {
             public void onClick(View v) {
                 if(txtText.getText() != null && txtText.getText().toString() != "")
                 {
+                    speaker = new MySimpleClass(v.getContext());
+
                     new GetFeedTask().execute(txtText.getText().toString());
-
                 }
-
             }
         });
     }
@@ -163,8 +165,9 @@ public class Chat extends ActionBarActivity {
                 arrayList.add(0, answer);
                 arrayList.add(0, question);
 
-
                 adapter.notifyDataSetChanged();
+
+                speaker.speak(answer, true);
 
                 txtText.setText("");
             }
@@ -224,5 +227,9 @@ public class Chat extends ActionBarActivity {
                 break;
             }
         }
+    }
+
+    private void speakWords(String speech) {
+//implement TTS here
     }
 }
