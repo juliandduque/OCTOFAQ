@@ -5,8 +5,10 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.StrictMode;
 import android.speech.RecognizerIntent;
+import android.support.annotation.MainThread;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -15,6 +17,10 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.amazonaws.auth.CognitoCachingCredentialsProvider;
+import com.amazonaws.mobileconnectors.lambdainvoker.LambdaInvokerFactory;
+import com.amazonaws.regions.Regions;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -38,6 +44,7 @@ public class MainActivity extends ActionBarActivity {
     private String REQUESTURL = "https://westus.api.cognitive.microsoft.com/qnamaker/v2.0/knowledgebases/";
     private String SERVICEKEY = "354c22285b484aa3ac2e556a70b904b0";
     private String SERVICENAME = "OCTOFAQ";
+    private LambdaInterface lambdaInterface;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -61,11 +68,60 @@ public class MainActivity extends ActionBarActivity {
                     submitURL.setEnabled(false);
                     URLS.setEnabled(false);
 
-                    new PostFeedTask().execute(URLS.getText().toString());
+                    new UrlFetchTask().execute(URLS.getText().toString());
                 }
             }
         });
 
+        // Get credentials for AWS Lambda
+        CognitoCachingCredentialsProvider credentialsProvider = new CognitoCachingCredentialsProvider(
+                getApplicationContext(),    /* get the context for the application */
+                "us-east-1:d958e476-855c-43b8-bd37-0e4bbc72c3f1",    /* Identity Pool ID */
+                Regions.US_EAST_1           /* Region for your identity pool--US_EAST_1 or EU_WEST_1*/
+        );
+        // Initialize LambdaInvokerFactory
+        LambdaInvokerFactory factory = new LambdaInvokerFactory(
+                MainActivity.this.getApplicationContext(),
+                Regions.US_EAST_1,
+                credentialsProvider);
+
+        lambdaInterface = factory.build(LambdaInterface.class);
+    }
+
+    class UrlFetchTask extends AsyncTask<String, Void, String> {
+
+        private Exception exception;
+        private String baseUrl;
+
+        @Override
+        protected String doInBackground(String... urls) {
+            //Under assumption user only sends one url
+            String url = urls[0].toString();
+            if(url.indexOf("http") == -1) url = "http://" + url;
+            baseUrl = url;
+            FaqUrlsRequest faqUrlsRequest = new FaqUrlsRequest(url, "100");
+            return lambdaInterface.OctoFaqLinksRequest(faqUrlsRequest);
+        }
+
+        @Override
+        protected void onPostExecute(String data)
+        {
+            String[] urls;
+            if(data.length() == 0){
+                urls = new String[1];
+                urls[0] = baseUrl;
+            } else {
+                urls = data.split("\n");
+            }
+            StringBuilder sb = new StringBuilder();
+            for(int cnt = 0; cnt < urls.length; cnt++){
+                sb.append(urls[cnt]);
+                sb.append(",");
+            }
+            String urlCsv = sb.toString();
+            if(urlCsv.lastIndexOf(",") == urlCsv.length() - 1) urlCsv = urlCsv.substring(0, urlCsv.length() - 1);
+            new PostFeedTask().execute(urlCsv);
+        }
     }
 
     class PostFeedTask extends AsyncTask<String, Void, String> {
@@ -74,8 +130,10 @@ public class MainActivity extends ActionBarActivity {
 
         @Override
         protected String doInBackground(String... urla) {
+
             String responser = "";
             try {
+
                 String[] ur = urla[0].toString().split(",");
 
                 ArrayList<String> urls = new ArrayList<String>();
@@ -83,17 +141,20 @@ public class MainActivity extends ActionBarActivity {
                 for (int i = 0; i < ur.length; i++)
                 {
                     String temp = ur[i];
-
-                    if(!ur[i].startsWith("http://www.") && !ur[i].startsWith("https://www."))
-                    {
-                        temp = "http://www." + temp;
-                    }
-
+                    if(!temp.startsWith("http") && !temp.startsWith("https"))
+                        temp = "http://" + temp;
+//                    if(!ur[i].startsWith("http://www.") && !ur[i].startsWith("https://www."))
+//                    {
+//                        temp = "http://www." + temp;
+//                    }
+//
                     urls.add(temp);
                 }
 
                 JSONObject BODY = new JSONObject();
                 BODY.put("name", SERVICENAME);
+                for(int cnt = 0; cnt < urls.size(); cnt++)
+                    Log.e("MainActivity >>>>", urls.get(cnt));
                 BODY.put("urls", new JSONArray(urls));
 
                 URL url = new URL(SERVICEURL);
