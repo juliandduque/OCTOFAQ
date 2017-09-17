@@ -31,7 +31,6 @@ public class Chat extends ActionBarActivity {
     private EditText txtText;
     private ListView listView;
     private Button submitQuestion;
-    private MySimpleClass speaker;
 
     private ArrayAdapter<String> adapter;
     private ArrayList<String> arrayList;
@@ -48,11 +47,11 @@ public class Chat extends ActionBarActivity {
 
         txtText = (EditText) findViewById(R.id.txtText);
 
-        btnSpeak = (ImageButton) findViewById(R.id.btnSpeak);
-
         listView = (ListView) findViewById(R.id.FINDME);
 
         arrayList = new ArrayList<String>();
+
+        btnSpeak = (ImageButton) findViewById(R.id.btnSpeak);
 
         submitQuestion = (Button) findViewById(R.id.SUBMITQUESTION);
 
@@ -71,7 +70,6 @@ public class Chat extends ActionBarActivity {
             @Override
             public void onClick(View v) {
 
-                speaker = new MySimpleClass(v.getContext());
 
                 Intent intent = new Intent(
                         RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
@@ -95,8 +93,6 @@ public class Chat extends ActionBarActivity {
             public void onClick(View v) {
                 if(txtText.getText() != null && txtText.getText().toString() != "")
                 {
-                    speaker = new MySimpleClass(v.getContext());
-
                     new GetFeedTask().execute(txtText.getText().toString());
                 }
             }
@@ -166,8 +162,6 @@ public class Chat extends ActionBarActivity {
                 arrayList.add(0, question);
 
                 adapter.notifyDataSetChanged();
-
-                speaker.speak(answer, true);
 
                 txtText.setText("");
             }
