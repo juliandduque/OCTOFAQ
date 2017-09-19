@@ -158,6 +158,8 @@ public class Chat extends ActionBarActivity {
         protected void onPostExecute(String feed)
         {
             if (feed.contains("200")) { //success
+                if(answer.contains("in the KB")) answer = "I can't answer that...";
+
                 arrayList.add(0, answer);
                 arrayList.add(0, question);
 

@@ -73,10 +73,12 @@ public class MainActivity extends ActionBarActivity
                 {
                     String temp = ur[i];
 
-                    if(!ur[i].startsWith("http://www.") && !ur[i].startsWith("https://www."))
+                    /*if(!ur[i].startsWith("http://") && !ur[i].startsWith("https://"))
                     {
-                        temp = "http://www." + temp;
-                    }
+                        if(!ur[i].startsWith("www")) temp = "www" + temp;
+
+                        temp = "http://" + temp;
+                    }*/
 
                     urls.add(temp);
                 }
