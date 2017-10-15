@@ -6,6 +6,7 @@ import android.os.AsyncTask;
 import android.speech.RecognizerIntent;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -36,15 +37,16 @@ public class Chat extends ActionBarActivity {
     private ArrayAdapter<String> adapter;
     private ArrayList<String> arrayList;
 
-    private String REQUESTURL = "https://westus.api.cognitive.microsoft.com/qnamaker/v2.0/knowledgebases/";
-    private String SERVICEKEY = "354c22285b484aa3ac2e556a70b904b0";
+    private String SERVICE_REQUEST_URL = "https://westus.api.cognitive.microsoft.com/qnamaker/v2.0/knowledgebases/";
+    private String SERVICE_KEY;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
         Intent intent = getIntent();
-        REQUESTURL = intent.getStringExtra("EXTRAMESSAGE");
+        SERVICE_REQUEST_URL = intent.getStringExtra("EXTRAMESSAGE");
+        SERVICE_KEY = intent.getStringExtra("SERVICE_KEY");
 
         txtText = (EditText) findViewById(R.id.txtText);
 
@@ -121,13 +123,13 @@ public class Chat extends ActionBarActivity {
 
                 question = urla[0];
 
-                URL url = new URL(REQUESTURL);
+                URL url = new URL(SERVICE_REQUEST_URL);
                 HttpURLConnection connection = (HttpURLConnection) url.openConnection();
                 connection.setConnectTimeout(30000);
                 connection.setRequestMethod("POST");
                 connection.setDoInput(true);
                 connection.setDoOutput(true);
-                connection.setRequestProperty("Ocp-Apim-Subscription-Key", SERVICEKEY);
+                connection.setRequestProperty("Ocp-Apim-Subscription-Key", SERVICE_KEY);
                 connection.setRequestProperty("Content-Type", "application/json");
 
                 OutputStream os = connection.getOutputStream();
