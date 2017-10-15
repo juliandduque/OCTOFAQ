@@ -87,7 +87,7 @@ public class MainActivity extends ActionBarActivity
             //Under assumption user only sends one url
             String url = urls[0].toString();
             if(url.indexOf("http") == -1) url = "http://" + url;
-            if(url.lastIndexOf("/") >= url.lastIndexOf(".")) url += "/";
+            if(url.lastIndexOf("/") >= url.lastIndexOf(".") && '/' != (url.charAt(url.length()-1))) url += "/";
             baseUrl = url;
             FaqUrlsRequest faqUrlsRequest = new FaqUrlsRequest(url, "100");
             Log.e("DEBUG", "base url : " + faqUrlsRequest.getBaseUrl());
@@ -97,6 +97,7 @@ public class MainActivity extends ActionBarActivity
         @Override
         protected void onPostExecute(String data)
         {
+            Log.e("DEBUG", "data : " + data);
             String[] urls;
             if(data.length() == 0){
                 urls = new String[1];
@@ -199,22 +200,16 @@ public class MainActivity extends ActionBarActivity
                 String[] urlsArray = urls[0].toString().split(",");
                 ArrayList<String> urlsList = new ArrayList<String>();
 
-                // Add a max of 5 urls
-                int numberOfUrlsToAdd = Math.min(urlsArray.length, 5);
-                for (int cnt = 0; cnt < numberOfUrlsToAdd; cnt++) {
-                    String url = urlsArray[cnt];
-                    if(!url.startsWith("http") && !url.startsWith("https")) url = "http://" + url;
-                    if(url.lastIndexOf("/") >= url.lastIndexOf(".")) url += "/";
-                    urlsList.add(url);
-                }
+                // Add 1 url to urls list
+                String firstUrl = urlsArray[0];
+                if(!firstUrl.startsWith("http") && !firstUrl.startsWith("https")) firstUrl = "http://" + firstUrl;
+                if(firstUrl.lastIndexOf("/") >= firstUrl.lastIndexOf(".")) firstUrl += "/";
+                urlsList.add(firstUrl);
+
                 // Store remaining urls
-                StringBuilder toReturnBuilder = new StringBuilder();
-                for(int cnt = 5; cnt < urlsArray.length; cnt++){
-                    toReturnBuilder.append(",");
-                    toReturnBuilder.append(urlsArray[cnt]);
+                if(urls[0].indexOf(",") != -1){
+                    toReturn = urls[0].substring(urls[0].indexOf(",")+1);
                 }
-                toReturn = toReturnBuilder.toString();
-                if(toReturn.length() != 0 && toReturn.startsWith(",")) toReturn = toReturn.substring(1);
 
                 // Create request body
                 JSONObject urlsJsonObject = new JSONObject();
@@ -257,18 +252,16 @@ public class MainActivity extends ActionBarActivity
         protected void onPostExecute(String returned)
         {
             Log.e("DEBUG", "returned : " + returned);
+            String urlsString = returned.substring(returned.indexOf(":")+1);
             if (returned.startsWith("204")) { //success
-                statusLabel.setText("Added urls successfully");
-                String urlsString = returned.substring(returned.indexOf(":")+1);
-                if(urlsString.length() > 0) { // still have urls to add
-                    new UpdateQnaService().execute(urlsString);
-                } else {
-                    new PublishQnaService().execute();
-                }
+                statusLabel.setText("Added url successfully");
             } else {
-                statusLabel.setText("Something wrong happened :( Try again later or check your URL!");
-                submitURL.setEnabled(true);
-                URLS.setEnabled(true);
+                statusLabel.setText("Could not add url");
+            }
+            if(urlsString.length() > 0) { // still have urls to add
+                new UpdateQnaService().execute(urlsString);
+            } else {
+                new PublishQnaService().execute();
             }
         }
     }
@@ -325,6 +318,8 @@ public class MainActivity extends ActionBarActivity
                 String urlsString = returned.substring(returned.indexOf(":")+1);
             } else {
                 statusLabel.setText("Something wrong happened :( Try again later or check your URL!");
+                REQUEST_URL = "https://westus.api.cognitive.microsoft.com/qnamaker/v2.0/knowledgebases/";
+                UPDATE_SERVICE_URL = "https://westus.api.cognitive.microsoft.com/qnamaker/v2.0/knowledgebases/";
                 submitURL.setEnabled(true);
                 URLS.setEnabled(true);
             }
