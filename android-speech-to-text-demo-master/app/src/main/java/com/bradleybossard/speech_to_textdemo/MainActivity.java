@@ -24,6 +24,9 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 
 public class MainActivity extends ActionBarActivity
@@ -35,7 +38,7 @@ public class MainActivity extends ActionBarActivity
     private String UPDATE_SERVICE_URL = "https://westus.api.cognitive.microsoft.com/qnamaker/v2.0/knowledgebases/";
     private String REQUEST_URL = "https://westus.api.cognitive.microsoft.com/qnamaker/v2.0/knowledgebases/";
     private String SERVICE_KEY = "ca294f56e7124392bc34eeffdd2f8d67";
-    private String SERVICE_NAME = "OCTOFAQ";
+    private String SERVICE_NAME = "2017-11-16_01-05";
     private LambdaInterface lambdaInterface;
 
     @Override
@@ -57,7 +60,15 @@ public class MainActivity extends ActionBarActivity
                     submitURL.setEnabled(false);
                     URLS.setEnabled(false);
 
-                    new UrlFetchTask().execute(URLS.getText().toString());
+                    try {
+                        new UrlFetchTask().execute(URLS.getText().toString()).get(30, TimeUnit.SECONDS);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    } catch (ExecutionException e) {
+                        e.printStackTrace();
+                    } catch (TimeoutException e) {
+                        e.printStackTrace();
+                    }
                 }
             }
         });
@@ -179,7 +190,15 @@ public class MainActivity extends ActionBarActivity
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-                new UpdateQnaService().execute(urlString);
+                try {
+                    new UpdateQnaService().execute(urlString).get(30, TimeUnit.SECONDS);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                } catch (ExecutionException e) {
+                    e.printStackTrace();
+                } catch (TimeoutException e) {
+                    e.printStackTrace();
+                }
             } else {
                 statusLabel.setText("Service creation failed");
                 submitURL.setEnabled(true);
@@ -259,7 +278,15 @@ public class MainActivity extends ActionBarActivity
                 statusLabel.setText("Could not add url");
             }
             if(urlsString.length() > 0) { // still have urls to add
-                new UpdateQnaService().execute(urlsString);
+                try {
+                    new UpdateQnaService().execute(urlsString).get(30, TimeUnit.SECONDS);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                } catch (ExecutionException e) {
+                    e.printStackTrace();
+                } catch (TimeoutException e) {
+                    e.printStackTrace();
+                }
             } else {
                 new PublishQnaService().execute();
             }
